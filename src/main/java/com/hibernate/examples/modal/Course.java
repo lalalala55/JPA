@@ -1,5 +1,6 @@
 package com.hibernate.examples.modal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class Course {
     private Double courseFee;
 
     @ManyToMany(mappedBy = "courses")
+    @JsonIgnore
     private Set<Student> students = new HashSet<>();
 
     public Course() {
