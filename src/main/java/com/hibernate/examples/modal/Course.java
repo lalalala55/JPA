@@ -1,7 +1,9 @@
 package com.hibernate.examples.modal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Course {
@@ -11,20 +13,18 @@ public class Course {
     private String courseName;
     private Double courseFee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
-    @JsonIgnore
-    private Student student;
+    @ManyToMany(mappedBy = "courses")
+    private Set<Student> students = new HashSet<>();
 
     public Course() {
         super();
     }
 
-    public Course(Integer courseId, String courseName, Double courseFee, Student student) {
+    public Course(Integer courseId, String courseName, Double courseFee) {
         this.courseId = courseId;
         this.courseName = courseName;
         this.courseFee = courseFee;
-        this.student = student;
+
     }
 
     public Integer getCourseId() {
@@ -51,12 +51,22 @@ public class Course {
         this.courseFee = courseFee;
     }
 
-    public Student getstudent() {
-        return student;
+    public Set<Student> getStudents() {
+        return students;
     }
 
-    public void setstudent(Student student) {
-        this.student = student;
+    public void setStudents(Set<Student> students) {
+        this.students = students;
+    }
+
+    public void add_student(Student student) {
+        this.students.add(student);
+        student.getCourses().add(this);
+    }
+
+    public void remove_student(Student student) {
+        this.students.remove(student);
+        student.getCourses().remove(this);
     }
 
     @Override
@@ -65,7 +75,6 @@ public class Course {
                 "courseId=" + courseId +
                 ", courseName='" + courseName + '\'' +
                 ", courseFee=" + courseFee +
-                ", student=" + student +
                 '}';
     }
 }

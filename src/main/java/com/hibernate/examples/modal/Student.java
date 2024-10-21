@@ -2,8 +2,8 @@ package com.hibernate.examples.modal;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "student_")
@@ -14,14 +14,19 @@ public class Student {
     private String firstname;
     private String lastname;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<Course> courses = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name="student_course",
+            joinColumns = {@JoinColumn(name="student_id")},
+            inverseJoinColumns = {@JoinColumn(name="course_id")}
+    )
+    private Set<Course> courses = new HashSet<>();
 
     public Student() {
       super();
     }
 
-    public Student(Integer id, String firstname, String lastname,  List<Course> courses) {
+    public Student(Integer id, String firstname, String lastname,  Set<Course> courses) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -52,22 +57,22 @@ public class Student {
         this.lastname = lastname;
     }
 
-    public List<Course> getCourses() {
+    public Set<Course> getCourses() {
         return courses;
     }
 
-    public void setCourses(List<Course> courses) {
+    public void setCourses(Set<Course> courses) {
         this.courses = courses;
     }
 
     public void add_course(Course course) {
         this.courses.add(course);
-        course.setstudent(this);
+        course.getStudents().add(this);
     }
 
     public void remove_course(Course course) {
         this.courses.remove(course);
-        course.setstudent(null);
+        course.getStudents().remove(this);
     }
 
     @Override
